@@ -1,0 +1,273 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique
+  description String?
+  imageUrl    String?    @map("image_url")
+  visible     Boolean    @default(true)
+  parentId    String?    @map("parent_id")
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model Brand {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  logoUrl     String?   @map("logo_url")
+  products    Product[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("brands")
+}
+
+model Product {
+  id          String           @id @default(uuid())
+  name        String
+  slug        String           @unique
+  description String?          @db.Text
+  brandId     String           @map("brand_id")
+  brand       Brand            @relation(fields: [brandId], references: [id])
+  categoryId  String           @map("category_id")
+  category    Category         @relation(fields: [categoryId], references: [id])
+  price       Decimal          @db.Decimal(10, 2)
+  images      String[]         @default([])
+  active      Boolean          @default(true)
+  featured    Boolean          @default(false)
+  variants    ProductVariant[]
+  orderItems  OrderItem[]
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id                 String              @id @default(uuid())
+  productId          String              @map("product_id")
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku                String              @unique
+  barcode            String?             @unique
+  name               String
+  price              Decimal             @db.Decimal(10, 2)
+  stock              Int                 @default(0)
+  minStock           Int                 @default(0) @map("min_stock")
+  orderItems         OrderItem[]
+  inventoryMovements InventoryMovement[]
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+// `quantity` se guarda como delta con signo aplicado al stock
+// (ENTRADA > 0, SALIDA < 0, AJUSTE puede ser cualquiera).
+// `stockAfter` es el stock resultante para auditoría.
+model InventoryMovement {
+  id          String         @id @default(uuid())
+  variantId   String         @map("variant_id")
+  variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  type        MovementType
+  quantity    Int
+  stockAfter  Int            @map("stock_after")
+  motivo      String?
+  orderId     String?        @map("order_id")
+  order       Order?         @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdById String?        @map("created_by_id")
+  createdBy   User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  @@index([variantId])
+  @@index([orderId])
+  @@map("inventory_movements")
+}
+
+enum MovementType {
+  ENTRADA
+  SALIDA
+  AJUSTE
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  city      String?
+  address   String?  @db.Text
+  orders    Order[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("customers")
+}
+
+model Order {
+  id            String              @id @default(uuid())
+  customerId    String              @map("customer_id")
+  customer      Customer            @relation(fields: [customerId], references: [id])
+  status        OrderStatus         @default(NUEVO)
+  total         Decimal             @db.Decimal(10, 2)
+  canal         OrderChannel        @default(WHATSAPP)
+  entregaMetodo DeliveryMethod      @default(DOMICILIO) @map("entrega_metodo")
+  notas         String?
+  items         OrderItem[]
+  invoice       Invoice?
+  movements     InventoryMovement[]
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  NUEVO
+  CONFIRMADO
+  PAGADO
+  ENTREGADO
+  CANCELADO
+}
+
+enum OrderChannel {
+  WHATSAPP
+  WEB
+  MOSTRADOR
+}
+
+enum DeliveryMethod {
+  DOMICILIO
+  TIENDA
+}
+
+model OrderItem {
+  id            String         @id @default(uuid())
+  orderId       String         @map("order_id")
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId     String         @map("variant_id")
+  variant       ProductVariant @relation(fields: [variantId], references: [id])
+  productId     String         @map("product_id")
+  product       Product        @relation(fields: [productId], references: [id])
+  quantity      Int
+  priceUnitario Decimal        @map("price_unitario") @db.Decimal(10, 2)
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Invoice {
+  id        String        @id @default(uuid())
+  orderId   String        @unique @map("order_id")
+  order     Order         @relation(fields: [orderId], references: [id])
+  numero    String        @unique
+  status    InvoiceStatus @default(PENDIENTE)
+  total     Decimal       @db.Decimal(10, 2)
+  impuestos Decimal       @default(0) @db.Decimal(10, 2)
+  fecha     DateTime      @default(now())
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  PENDIENTE
+  EMITIDA
+  PAGADA
+  ANULADA
+}
+
+model Counter {
+  key   String @id
+  value Int    @default(0)
+
+  @@map("counters")
+}
+
+model User {
+  id            String              @id @default(uuid())
+  name          String              @default("")
+  email         String              @unique
+  emailVerified Boolean             @default(false) @map("email_verified")
+  image         String?
+  role          UserRole            @default(VENDEDOR)
+  sessions      Session[]
+  accounts      Account[]
+  movements     InventoryMovement[]
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}
+
+enum UserRole {
+  ADMIN
+  VENDEDOR
+}

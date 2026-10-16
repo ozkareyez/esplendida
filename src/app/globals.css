@@ -1,26 +1,512 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tw-animate-css";
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-light: var(--primary-light);
+  --color-primary-lighter: var(--primary-lighter);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-deep: var(--primary-deep);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-whatsapp: var(--whatsapp);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Espléndida — DESIGN.md §4. Tokens derivados del logotipo real. */
+  --background: #FAFAFA;
+  --foreground: #2B2B2B;
+  --muted: #F5F5F5;
+  --muted-foreground: #6B7280;
+  --popover: #FFFFFF;
+  --popover-foreground: #2B2B2B;
+  --card: #FFFFFF;
+  --card-foreground: #2B2B2B;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+
+  --primary: #EC4899;          /* Pink vibrante — color de marca principal */
+  --primary-foreground: #FFFFFF;
+  --primary-light: #F472B6;    /* Rosa Claro — hover */
+  --primary-lighter: #FCE7F3;  /* Rosa Pastel — fondos suaves */
+  --primary-dark: #DB2777;     /* Rosa Intenso — active/pressed */
+  --primary-deep: #BE185D;     /* Rosa Profundo — fondos oscuros */
+  --secondary: #FCE7F3;
+  --secondary-foreground: #2B2B2B;
+  --accent: #C9A24B;           /* Dorado del logo — solo detalles */
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --success: #16A34A;
+  --success-foreground: #FFFFFF;
+  --whatsapp: #25D366;
+  --ring: #EC4899;
+  --radius: 0.5rem;
+
+  /* Sombras — DESIGN.md §30 */
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lift: 0 12px 40px -12px rgba(0, 0, 0, 0.08);
+  --shadow-brand: 0 4px 20px -4px rgba(236, 72, 153, 0.4);
+
+  /* Duraciones — DESIGN.md §31 */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-drawer: 280ms;
+  --duration-slide: 5000ms;
+}
+
+.dark {
+  --background: #0F0F0F;
+  --foreground: #F5F5F5;
+  --muted: #1F1F1F;
+  --muted-foreground: #A1A1AA;
+  --popover: #171717;
+  --popover-foreground: #F5F5F5;
+  --card: #171717;
+  --card-foreground: #F5F5F5;
+  --border: #27272A;
+  --input: #27272A;
+  --primary: #F472B6;
+  --primary-foreground: #FFFFFF;
+  --primary-light: #F9A8D4;
+  --primary-lighter: #3B1220;
+  --primary-dark: #FCE7F3;
+  --primary-deep: #3B1220;
+  --secondary: #2A1A21;
+  --secondary-foreground: #F5F5F5;
+  --accent: #D8B45F;
+  --accent-foreground: #1A1A1A;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --success: #16A34A;
+  --success-foreground: #FFFFFF;
+  --whatsapp: #25D366;
+  --ring: #F472B6;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
 }
+
+/* Typography Scale — DESIGN.md §5 */
+.text-display {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.text-h1 {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.text-h2 {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.625rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.text-h3 {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.text-body {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.text-body-sm {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.text-caption {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Precios con cifras tabulares para alinear columnas — DESIGN.md §5 */
+.text-price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.text-price-lg {
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Precio anterior tachado — DESIGN.md §11 */
+.price-strike {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Clamp de líneas para nombres de producto — DESIGN.md §11 */
+.clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Button Styles */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-semibold transition-all duration-200;
+  @apply hover:bg-primary-dark hover:shadow-[var(--shadow-brand)];
+  @apply active:scale-[0.98];
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+}
+
+.btn-primary-light {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary-light px-6 py-3 text-white font-semibold transition-all duration-200;
+  @apply hover:bg-primary;
+  @apply active:scale-[0.98];
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 border-accent bg-transparent px-6 py-3 text-accent font-semibold transition-all duration-200;
+  @apply hover:bg-accent hover:text-accent-foreground;
+  @apply active:scale-[0.98];
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200;
+  @apply hover:bg-muted hover:text-primary;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+}
+
+/* Card Styles */
+.card-elevated {
+  @apply bg-card rounded-xl border border-border overflow-hidden transition-all duration-300;
+  @apply hover:shadow-[var(--shadow-lift)] hover:border-primary/30;
+}
+
+.card-elevated:hover img {
+  @apply scale-105;
+}
+
+/* Input Styles */
+.input-elegant {
+  @apply w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  @apply disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* Touch target mínimo 44px — DESIGN.md §27 */
+.tap-target {
+  @apply relative;
+}
+
+.tap-target::after {
+  content: '';
+  position: absolute;
+  inset: 50% 50% 50% 50%;
+  min-width: 44px;
+  min-height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+/* Skeleton loading — DESIGN.md §33 */
+.skeleton {
+  @apply relative overflow-hidden bg-muted rounded;
+}
+
+.skeleton::after {
+  content: '';
+  @apply absolute inset-0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Animation utilities */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Barra de progreso del carrusel del hero — DESIGN.md §31 */
+@keyframes slide-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.animate-slide-progress {
+  animation: slide-progress var(--duration-slide) linear forwards;
+}
+
+/* Deriva lenta de la imagen activa (efecto Ken Burns) durante el hold */
+@keyframes ken-burns {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.06) translate3d(-0.8%, -0.6%, 0); }
+}
+
+.animate-ken-burns {
+  animation: ken-burns var(--duration-slide) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Revelado escalonado del texto del hero */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translate3d(0, 26px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.animate-hero-rise {
+  animation: hero-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Subrayado dorado del título: se dibuja de izquierda a derecha */
+@keyframes hero-line {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.animate-hero-line {
+  animation: hero-line 700ms cubic-bezier(0.65, 0, 0.35, 1) 260ms both;
+}
+
+/* Entrada del bloque de texto desde la esquina inferior derecha,
+   se reproduce cada vez que cambia la diapositiva */
+@keyframes hero-corner-in {
+  from { opacity: 0; transform: translate3d(28px, 18px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Solo en desktop (lg = 1024px); en móvil el bloque no se anima así */
+@media (min-width: 1024px) {
+  .animate-hero-corner {
+    animation: hero-corner-in 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Título del hero más contenido y estético dentro de la esquina */
+  .hero-corner-title {
+    font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+}
+
+.rise-1 { animation-delay: 40ms; }
+.rise-2 { animation-delay: 120ms; }
+.rise-3 { animation-delay: 200ms; }
+.rise-4 { animation-delay: 280ms; }
+.rise-5 { animation-delay: 360ms; }
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.7s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right var(--duration-drawer) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Ocultar scrollbar en carruseles horizontales */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Golden line accent */
+.golden-line {
+  @apply relative;
+}
+
+.golden-line::after {
+  content: '';
+  @apply absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-accent to-transparent;
+}
+
+/* Pink line accent */
+.pink-line {
+  @apply relative;
+}
+
+.pink-line::after {
+  content: '';
+  @apply absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-primary to-transparent;
+}
+
+/* Image hover zoom container */
+.img-zoom-container {
+  @apply relative overflow-hidden;
+}
+
+.img-zoom-container img {
+  @apply transition-transform duration-500 ease-out;
+}
+
+.img-zoom-container:hover img {
+  @apply scale-105;
+}
+
+/* Zoom de galería de producto — DESIGN.md §18 */
+.gallery-zoom {
+  @apply relative overflow-hidden;
+}
+
+.gallery-zoom img {
+  @apply transition-transform duration-300 ease-out;
+  transform-origin: center;
+}
+
+.gallery-zoom[data-zoomed="true"] img {
+  transform: scale(2);
+  cursor: zoom-out;
+}
+
+/* Overlay de gradiente para texto sobre imagen */
+.overlay-scrim {
+  background: linear-gradient(
+    to top,
+    rgba(23, 23, 23, 0.82) 0%,
+    rgba(23, 23, 23, 0.45) 45%,
+    rgba(23, 23, 23, 0) 100%
+  );
+}
+
+/* Gradient text utilities */
+.text-gradient-primary {
+  background: linear-gradient(to right, #EC4899, #F472B6, #F9A8D4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(to right, #C9A24B, #EAB308, #FBBF24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
