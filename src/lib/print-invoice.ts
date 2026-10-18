@@ -1,3 +1,5 @@
+import { cloudinary, IMG } from "@/lib/cdn";
+
 export interface ThermalLine {
   text: string;
   align?: "left" | "center" | "right";
@@ -203,6 +205,13 @@ export function buildReceiptHtml(data: ReceiptData, opts: ReceiptHtmlOptions = {
   }
   .receipt { font-size: 11px; line-height: 1.45; }
   .center { text-align: center; }
+  .logo {
+    display: block;
+    margin: 0 auto 4px;
+    width: 34mm;
+    max-width: 100%;
+    height: auto;
+  }
   .store { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
   .tagline { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
   .label { color: #444; text-transform: uppercase; font-size: 10px; letter-spacing: .5px; }
@@ -239,7 +248,13 @@ export function buildReceiptHtml(data: ReceiptData, opts: ReceiptHtmlOptions = {
   <div class="paper">
     <div class="receipt">
       <header class="center">
-        <div class="store">${esc(data.storeName)}</div>
+        <img
+          class="logo"
+          src="${esc(cloudinary(IMG.logo, "f_auto,q_auto,w_400"))}"
+          alt="${esc(data.storeName)}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+        />
+        <div class="store" style="display:none">${esc(data.storeName)}</div>
         ${data.storeTagline ? `<div class="tagline">${esc(data.storeTagline)}</div>` : ""}
         ${data.storePhone ? `<div class="tagline">Tel: ${esc(data.storePhone)}</div>` : ""}
       </header>
