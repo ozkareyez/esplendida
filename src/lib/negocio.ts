@@ -32,8 +32,8 @@ export const MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&desti
 )}`;
 
 export const SOCIAL_PROFILES = {
-  tiktok: "https://www.tiktok.com/",
-  instagram: "https://www.instagram.com/",
+  tiktok: "https://www.tiktok.com/@esplendida.tienda",
+  instagram: "https://www.instagram.com/esplendida_tiendabelleza",
   facebook: "https://www.facebook.com/",
 };
 
@@ -41,7 +41,14 @@ export const SOCIAL_PROFILES = {
  * Pega aquí los links de videos de TikTok (o solo su ID numérico).
  * Ej.: "https://www.tiktok.com/@esplendida/video/7412345678901234567"
  */
-export const TIKTOK_VIDEOS: string[] = [];
+export const TIKTOK_VIDEOS: string[] = [
+  "https://www.tiktok.com/@esplendida.tienda/video/7697380695567535381",
+  "https://www.tiktok.com/@esplendida.tienda/video/7697041987387657478",
+  "https://www.tiktok.com/@esplendida.tienda/video/7696290824098712853",
+  "https://www.tiktok.com/@esplendida.tienda/video/7694774178066500884",
+  "https://www.tiktok.com/@esplendida.tienda/video/7694062976147393812",
+  "https://www.tiktok.com/@esplendida.tienda/video/7693757855211490581",
+];
 
 export function tiktokEmbedId(raw: string): string | null {
   const match = /video\/(\d+)/.exec(raw) || /^(\d{6,})$/.exec(raw.trim());

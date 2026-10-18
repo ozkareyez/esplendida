@@ -7,6 +7,7 @@ import {
   FacebookIcon,
   WhatsAppIcon,
 } from "@/components/social-icons";
+import { SOCIAL_PROFILES } from "@/lib/negocio";
 
 const COLUMNS = [
   {
@@ -39,9 +40,9 @@ const COLUMNS = [
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "573000000000";
 
 const SOCIALS = [
-  { label: "Facebook", href: "https://www.facebook.com/", Icon: FacebookIcon },
-  { label: "Instagram", href: "https://www.instagram.com/esplendida_tiendabelleza?xtok=am82OHJzYXRhY3lr", Icon: InstagramIcon },
-  { label: "TikTok", href: "https://www.tiktok.com/@esplendida.tienda?_r=1&_t=ZS-9Af50PKdbX7", Icon: TikTokIcon },
+  { label: "Facebook", href: SOCIAL_PROFILES.facebook, Icon: FacebookIcon },
+  { label: "Instagram", href: SOCIAL_PROFILES.instagram, Icon: InstagramIcon },
+  { label: "TikTok", href: SOCIAL_PROFILES.tiktok, Icon: TikTokIcon },
   { label: "WhatsApp", href: `https://wa.me/${WHATSAPP_NUMBER}`, Icon: WhatsAppIcon },
 ];
 
