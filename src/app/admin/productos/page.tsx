@@ -169,40 +169,74 @@ export default function AdminProductosPage() {
 
   const uploadFiles = async (files: File[]) => {
     const images = files.filter((f) => f.type.startsWith("image/"));
-    if (images.length === 0) return;
+    if (images.length === 0) {
+      showToast({
+        title: "Archivo no válido",
+        description: "Solo se permiten archivos de imagen (JPG, PNG, WEBP…).",
+        variant: "error",
+      });
+      return;
+    }
     setUploading(true);
     const uploaded: string[] = [];
+    const failed: string[] = [];
     for (const file of images) {
       const fd = new FormData();
       fd.append("file", file);
       try {
         const res = await fetch("/api/upload/cloudinary", { method: "POST", body: fd });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.url) uploaded.push(data.url);
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.url) {
+          uploaded.push(data.url);
+        } else {
+          failed.push(`${file.name}: ${data.error || "error desconocido"}`);
         }
       } catch (err) {
         console.error(err);
+        failed.push(`${file.name}: error de red`);
       }
     }
     if (uploaded.length > 0) {
       const current = parseImages(form.imagesText);
       setForm((f) => ({ ...f, imagesText: [...current, ...uploaded].join(", ") }));
+      showToast({
+        title: uploaded.length === 1 ? "Imagen subida" : `${uploaded.length} imágenes subidas`,
+        variant: "success",
+      });
+    }
+    if (failed.length > 0) {
+      showToast({
+        title: "No se pudo subir la imagen",
+        description: failed.join(" · "),
+        variant: "error",
+      });
     }
     setUploading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
     setError(null);
+
+    const images = parseImages(form.imagesText);
+    if (images.length === 0) {
+      const ok = await confirm({
+        title: "El producto no tiene imágenes",
+        description:
+          "Sin imagen no se mostrará en la landing page ni en el catálogo (aparecerá un ícono genérico). ¿Quieres guardar de todos modos?",
+        confirmLabel: "Guardar sin imagen",
+      });
+      if (!ok) return;
+    }
+
+    setSaving(true);
 
     const payload = {
       name: form.name,
       slug: derivedSlug,
       description: form.description,
       price: Number(form.price),
-      images: parseImages(form.imagesText),
+      images,
       active: Boolean(form.active),
       featured: Boolean(form.featured),
       brandId: form.brandId,

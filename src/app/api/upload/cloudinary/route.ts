@@ -4,6 +4,7 @@ import { requireAdminApi } from "@/lib/auth-guard";
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = process.env.CLOUDINARY_UPLOAD_PRESET || "";
 const FOLDER = "esplendor/products";
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"]);
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,7 +21,12 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     if (!file) return NextResponse.json({ error: "No se envió ningún archivo" }, { status: 400 });
-    if (!file.type.startsWith("image/")) return NextResponse.json({ error: "Solo se permiten imágenes" }, { status: 400 });
+    if (!ALLOWED_TYPES.has(file.type)) {
+      return NextResponse.json(
+        { error: "Formato no permitido. Usa JPG, PNG, WEBP, GIF o AVIF" },
+        { status: 400 }
+      );
+    }
 
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) return NextResponse.json({ error: "La imagen no puede superar 5MB" }, { status: 400 });
@@ -33,11 +39,9 @@ export async function POST(req: NextRequest) {
     }
 
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
 
     const uploadForm = new FormData();
-    uploadForm.append("file", dataUri);
+    uploadForm.append("file", new Blob([bytes], { type: file.type }), file.name || "image");
     uploadForm.append("upload_preset", UPLOAD_PRESET);
     uploadForm.append("folder", FOLDER);
 
