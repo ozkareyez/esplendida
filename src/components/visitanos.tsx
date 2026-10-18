@@ -92,7 +92,7 @@ export function Visitanos() {
         <div className="mt-14 lg:mt-16">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-h3">
-              {videos.length > 0 ? "Mira nuestro trabajo" : "Síguenos y mira nuestro trabajo"}
+              {videos.length > 0 ? "Échale un ojito" : "Síguenos y mira nuestro trabajo"}
             </h3>
             <a
               href={SOCIAL_PROFILES.tiktok}
