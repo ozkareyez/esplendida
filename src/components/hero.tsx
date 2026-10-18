@@ -162,7 +162,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative flex min-h-[88svh] flex-col items-start justify-end overflow-hidden bg-foreground lg:min-h-[90svh] lg:items-end"
+      className="relative flex flex-col overflow-hidden bg-background lg:min-h-[90svh] lg:items-end lg:justify-end lg:bg-foreground"
       aria-roledescription="carrusel"
       aria-label="Novedades destacadas"
       onKeyDown={onKeyDown}
@@ -187,63 +187,120 @@ export function Hero() {
         if (Math.abs(delta) > SWIPE_THRESHOLD) step(delta < 0 ? 1 : -1);
       }}
     >
-      {/* Diapositivas. Cada una se compone de dos capas: un fondo desenfocado
-          que deriva lentamente (Ken Burns) para dar vida y cubre cualquier banda
-          sobrante, y la foto completa sin recortar (`object-contain`), que entra
-          con un zoom sutil y queda a escala 1 en reposo. */}
-      {SLIDES.map((slide, i) => (
+      {/* Diapositivas. En móvil es un bloque propio con altura fija (la imagen
+          no se tapa con texto); en desktop se comporta como capa absoluta de
+          fondo, igual que siempre. */}
+      <div className="relative h-[52svh] w-full shrink-0 lg:absolute lg:inset-0 lg:h-auto">
+        {SLIDES.map((slide, i) => (
+          <div
+            key={slide.src}
+            className={cn(
+              "absolute inset-0 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
+              i === index ? "scale-100 opacity-100" : "scale-105 opacity-0"
+            )}
+            aria-hidden={i !== index}
+          >
+            <div className="absolute inset-0 overflow-hidden">
+              <Image
+                src={slide.src}
+                alt=""
+                aria-hidden="true"
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                className={cn(
+                  "scale-110 object-cover blur-3xl",
+                  i === index && "animate-ken-burns motion-reduce:animate-none"
+                )}
+              />
+            </div>
+            <div className="absolute inset-0 flex items-start justify-center lg:items-center">
+              <Image
+                src={slide.src}
+                alt={`${slide.eyebrow}: ${slide.title} ${slide.highlight}`}
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                className="object-contain object-top lg:object-contain lg:object-center"
+              />
+            </div>
+          </div>
+        ))}
+
+        {/* Scrim — en móvil apenas un degradado inferior para los indicadores;
+            el texto ya no vive sobre la foto */}
         <div
-          key={slide.src}
-          className={cn(
-            "absolute inset-0 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
-            i === index ? "scale-100 opacity-100" : "scale-105 opacity-0"
-          )}
-          aria-hidden={i !== index}
+          className="absolute inset-0 z-[1] bg-gradient-to-t from-foreground/50 via-foreground/5 to-transparent lg:bg-gradient-to-t lg:from-foreground/80 lg:via-foreground/45 lg:to-foreground/20"
+          aria-hidden="true"
+        />
+
+        {/* Flechas — 48px, mínimo táctil §27. En móvil se navega con swipe */}
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          aria-label="Diapositiva anterior"
+          className="absolute left-3 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:inline-flex"
         >
-          <div className="absolute inset-0 overflow-hidden">
-            <Image
-              src={slide.src}
-              alt=""
-              aria-hidden="true"
-              fill
-              priority={i === 0}
-              sizes="100vw"
-              className={cn(
-                "scale-110 object-cover blur-3xl",
-                i === index && "animate-ken-burns motion-reduce:animate-none"
-              )}
-            />
-          </div>
-          <div className="absolute inset-0 flex items-start justify-center lg:items-center">
-            <Image
-              src={slide.src}
-              alt={`${slide.eyebrow}: ${slide.title} ${slide.highlight}`}
-              fill
-              priority={i === 0}
-              sizes="100vw"
-              className="object-contain object-top lg:object-contain lg:object-center"
-            />
-          </div>
+          <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={() => step(1)}
+          aria-label="Diapositiva siguiente"
+          className="absolute right-3 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:inline-flex"
+        >
+          <ChevronRight className="h-6 w-6" aria-hidden="true" />
+        </button>
+
+        {/* Indicadores + control de reproducción (WCAG 2.2.2) */}
+        <div className="absolute inset-x-0 bottom-3 z-20 flex items-center justify-center gap-1 sm:bottom-5">
+          {SLIDES.map((slide, i) => (
+            <button
+              key={slide.src}
+              type="button"
+              onClick={() => goTo(i)}
+              aria-label={`Ir a la diapositiva ${i + 1}: ${slide.eyebrow}`}
+              aria-current={i === index}
+              className="group inline-flex h-11 w-8 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              <span className="relative block h-2.5 w-full overflow-hidden rounded-full bg-white/45 transition-colors duration-200 group-hover:bg-white/70">
+                <span
+                  className={cn(
+                    "absolute inset-0 origin-left rounded-full bg-white",
+                    i === index ? "animate-slide-progress" : "scale-x-0",
+                    i === index && paused && "[animation-play-state:paused]"
+                  )}
+                />
+              </span>
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={togglePlayback}
+            aria-label={userPaused ? "Reanudar carrusel" : "Pausar carrusel"}
+            className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-white/85 transition-colors duration-200 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          >
+            {userPaused ? (
+              <Play className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <Pause className="h-4 w-4" aria-hidden="true" />
+            )}
+          </button>
         </div>
-      ))}
+      </div>
 
-      {/* Scrim para legibilidad del texto sobre la fotografía */}
-      <div
-        className="absolute inset-0 z-[1] bg-gradient-to-t from-foreground/90 via-foreground/40 to-foreground/10 lg:bg-gradient-to-t lg:from-foreground/80 lg:via-foreground/45 lg:to-foreground/20"
-        aria-hidden="true"
-      />
-
-      {/* En móvil el contenido va centrado; en desktop se ancla a la esquina
-          inferior derecha. La `key` remonta el bloque en cada cambio de
-          diapositiva: así el efecto de aparición (`animate-hero-corner`, solo en
-          desktop) y el revelado escalonado se reproducen cada vez. */}
-      <div className="container relative z-10 mx-auto mt-auto flex w-full flex-col items-center px-4 pb-60 pt-6 lg:items-end lg:px-6 lg:pb-28">
+      {/* Contenido — en móvil va DEBAJO de la imagen sobre el fondo claro,
+          con tipografía menor; en desktop se ancla a la esquina inferior
+          derecha sobre la fotografía. La `key` remonta el bloque en cada
+          cambio de diapositiva para reproducir la animación. */}
+      <div className="container relative z-10 mx-auto flex w-full flex-col items-center px-4 pb-12 pt-7 lg:mt-auto lg:items-end lg:px-6 lg:pb-28 lg:pt-6">
         <div key={slide.src} className="animate-hero-corner w-full max-w-3xl text-center lg:max-w-md lg:text-right">
-          <p className="text-caption animate-hero-rise rise-1 mb-3 text-white/90">
+          <p className="animate-hero-rise rise-1 mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary lg:mb-3 lg:text-white/90">
             {slide.eyebrow}
           </p>
 
-          <h1 className="text-display hero-corner-title animate-hero-rise rise-2 mb-5 text-white lg:mb-4">
+          <h1 className="animate-hero-rise rise-2 mb-3 text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl lg:mb-4 lg:text-[clamp(1.75rem,2.6vw,2.5rem)] lg:leading-[1.15] lg:text-white">
             {slide.title}
             <br />
             <span className="relative inline-block">
@@ -255,13 +312,13 @@ export function Hero() {
             </span>
           </h1>
 
-          <p className="text-body animate-hero-rise rise-3 mx-auto mb-10 max-w-xl text-base text-white/90 md:text-lg lg:mx-0 lg:mb-6 lg:max-w-none">
+          <p className="animate-hero-rise rise-3 mx-auto mb-7 max-w-xl text-sm leading-relaxed text-muted-foreground lg:mb-6 lg:mx-0 lg:max-w-none lg:text-base lg:text-white/90 lg:leading-normal">
             {slide.description}
           </p>
 
           <div className="animate-hero-rise rise-4 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4 lg:justify-end lg:gap-3">
             <Link href={slide.href} className="w-full sm:w-auto">
-              <Button className="h-13 w-full bg-white px-8 text-base font-semibold text-primary shadow-lg transition-all duration-200 hover:bg-primary-lighter hover:shadow-[0_8px_30px_-8px_rgba(224,72,120,0.4)] sm:w-auto lg:h-11 lg:px-6 lg:text-sm">
+              <Button className="h-12 w-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary-dark sm:w-auto lg:h-11 lg:bg-white lg:px-6 lg:text-sm lg:text-primary lg:shadow-lg lg:hover:bg-primary-lighter lg:hover:shadow-[0_8px_30px_-8px_rgba(224,72,120,0.4)]">
                 {slide.cta}
               </Button>
             </Link>
@@ -271,79 +328,24 @@ export function Hero() {
               rel="noopener noreferrer"
               className="w-full sm:w-auto"
             >
-<Button
-                  variant="outline"
-                  className="h-13 w-full border-2 border-white bg-transparent px-8 text-base font-semibold text-white transition-all duration-200 hover:border-white hover:bg-white/10 sm:w-auto lg:h-11 lg:px-6 lg:text-sm"
-                >
+              <Button
+                variant="outline"
+                className="h-12 w-full border-2 border-primary/40 bg-transparent px-6 text-sm font-semibold text-primary transition-all duration-200 hover:border-primary hover:bg-primary/5 sm:w-auto lg:h-11 lg:border-2 lg:border-white lg:px-6 lg:text-sm lg:text-white lg:hover:border-white lg:hover:bg-white/10"
+              >
                 Pedir por WhatsApp
               </Button>
             </a>
           </div>
         </div>
 
-        <ul className="animate-hero-rise rise-5 mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-white/85 lg:mt-8 lg:justify-end lg:gap-x-6">
+        <ul className="animate-hero-rise rise-5 mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-muted-foreground lg:mt-8 lg:justify-end lg:gap-x-6 lg:text-sm lg:text-white/85">
           {TRUST.map(({ icon: Icon, label }) => (
             <li key={label} className="flex items-center gap-2">
-              <Icon className="h-5 w-5 text-accent" aria-hidden="true" />
+              <Icon className="h-4 w-4 text-primary lg:h-5 lg:w-5 lg:text-accent" aria-hidden="true" />
               {label}
             </li>
           ))}
         </ul>
-      </div>
-
-      {/* Flechas — 48px, mínimo táctil §27. En móvil se navega con swipe */}
-      <button
-        type="button"
-        onClick={() => step(-1)}
-        aria-label="Diapositiva anterior"
-        className="absolute left-3 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:inline-flex"
-      >
-        <ChevronLeft className="h-6 w-6" aria-hidden="true" />
-      </button>
-      <button
-        type="button"
-        onClick={() => step(1)}
-        aria-label="Diapositiva siguiente"
-        className="absolute right-3 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:inline-flex"
-      >
-        <ChevronRight className="h-6 w-6" aria-hidden="true" />
-      </button>
-
-      {/* Indicadores + control de reproducción (WCAG 2.2.2) */}
-      <div className="absolute inset-x-0 bottom-3 z-20 flex items-center justify-center gap-1 sm:bottom-5">
-        {SLIDES.map((slide, i) => (
-          <button
-            key={slide.src}
-            type="button"
-            onClick={() => goTo(i)}
-            aria-label={`Ir a la diapositiva ${i + 1}: ${slide.eyebrow}`}
-            aria-current={i === index}
-            className="group inline-flex h-11 w-8 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <span className="relative block h-2.5 w-full overflow-hidden rounded-full bg-white/45 transition-colors duration-200 group-hover:bg-white/70">
-              <span
-                className={cn(
-                  "absolute inset-0 origin-left rounded-full bg-white",
-                  i === index ? "animate-slide-progress" : "scale-x-0",
-                  i === index && paused && "[animation-play-state:paused]"
-                )}
-              />
-            </span>
-          </button>
-        ))}
-
-        <button
-          type="button"
-          onClick={togglePlayback}
-          aria-label={userPaused ? "Reanudar carrusel" : "Pausar carrusel"}
-          className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-white/85 transition-colors duration-200 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-        >
-          {userPaused ? (
-            <Play className="h-4 w-4" aria-hidden="true" />
-          ) : (
-            <Pause className="h-4 w-4" aria-hidden="true" />
-          )}
-        </button>
       </div>
     </section>
   );
