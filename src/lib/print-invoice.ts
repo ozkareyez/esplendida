@@ -250,7 +250,7 @@ export function buildReceiptHtml(data: ReceiptData, opts: ReceiptHtmlOptions = {
       <header class="center">
         <img
           class="logo"
-          src="${esc(cloudinary(IMG.logo, "f_auto,q_auto,w_400"))}"
+          src="${esc(cloudinary(IMG.logo, "f_png,w_400,e_grayscale,e_contrast:100"))}"
           alt="${esc(data.storeName)}"
           onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
         />
