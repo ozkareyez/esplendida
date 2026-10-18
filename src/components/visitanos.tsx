@@ -107,16 +107,21 @@ export function Visitanos() {
           </div>
 
           {videos.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-3">
+            <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-3 sm:gap-6">
               {videos.map((id) => (
-                <iframe
+                <div
                   key={id}
-                  src={`https://www.tiktok.com/embed/v2/${id}?lang=es-ES`}
-                  title="Video de TikTok de Espléndida"
-                  className="h-[640px] w-full min-w-0 rounded-xl border border-border"
-                  loading="lazy"
-                  allow="encrypted-media; fullscreen; picture-in-picture"
-                />
+                  className="mx-auto w-full max-w-[260px] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[var(--shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-brand)]"
+                >
+                  <iframe
+                    src={`https://www.tiktok.com/player/v1/${id}?lang=es-ES&description=0&music_info=0&progress_bar=1&autoplay=0`}
+                    title="Video de TikTok de Espléndida"
+                    className="h-[440px] w-full border-0"
+                    loading="lazy"
+                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
               ))}
             </div>
           ) : (

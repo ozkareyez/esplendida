@@ -42,11 +42,8 @@ export const SOCIAL_PROFILES = {
  * Ej.: "https://www.tiktok.com/@esplendida/video/7412345678901234567"
  */
 export const TIKTOK_VIDEOS: string[] = [
-  "https://www.tiktok.com/@esplendida.tienda/video/7697380695567535381",
-  "https://www.tiktok.com/@esplendida.tienda/video/7697041987387657478",
-  "https://www.tiktok.com/@esplendida.tienda/video/7696290824098712853",
-  "https://www.tiktok.com/@esplendida.tienda/video/7694774178066500884",
-  "https://www.tiktok.com/@esplendida.tienda/video/7694062976147393812",
+  "https://www.tiktok.com/@esplendida.tienda/video/7691891231739088148",
+  "https://www.tiktok.com/@esplendida.tienda/video/7692204583078104340",
   "https://www.tiktok.com/@esplendida.tienda/video/7693757855211490581",
 ];
 
@@ -56,4 +53,4 @@ export function tiktokEmbedId(raw: string): string | null {
 }
 
 export const tiktokEmbedUrl = (id: string) =>
-  `https://www.tiktok.com/embed/v2/${id}`;
+  `https://www.tiktok.com/player/v1/${id}?lang=es-ES&description=0&music_info=0`;
