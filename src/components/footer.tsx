@@ -40,8 +40,8 @@ const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "573000000000
 
 const SOCIALS = [
   { label: "Facebook", href: "https://www.facebook.com/", Icon: FacebookIcon },
-  { label: "Instagram", href: "https://www.instagram.com/", Icon: InstagramIcon },
-  { label: "TikTok", href: "https://www.tiktok.com/", Icon: TikTokIcon },
+  { label: "Instagram", href: "https://www.instagram.com/esplendida_tiendabelleza?xtok=am82OHJzYXRhY3lr", Icon: InstagramIcon },
+  { label: "TikTok", href: "https://www.tiktok.com/@esplendida.tienda?_r=1&_t=ZS-9Af50PKdbX7", Icon: TikTokIcon },
   { label: "WhatsApp", href: `https://wa.me/${WHATSAPP_NUMBER}`, Icon: WhatsAppIcon },
 ];
 
