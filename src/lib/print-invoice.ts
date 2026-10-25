@@ -231,7 +231,7 @@ export function buildReceiptHtml(data: ReceiptData, opts: ReceiptHtmlOptions = {
   .footer { margin-top: 10px; text-align: center; font-size: 10.5px; letter-spacing: 1px; }
   .footer .note { display: block; margin-top: 3px; font-size: 9px; letter-spacing: 0; color: #333; }
 
-  @page { size: ${paper}mm auto; margin: 0; }
+  @page { margin: 0; }
   @media print {
     html, body { background: #fff; }
     .toolbar { display: none !important; }

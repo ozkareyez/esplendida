@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { MessageCircle, Clock, MapPin } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
+import { whatsappLink } from "@/lib/negocio";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "573000000000";
-const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  "Hola Espléndida, me gustaría hacer una consulta."
-)}`;
+const WHATSAPP_HREF = whatsappLink("Hola Espléndida, me gustaría hacer una consulta.");
 
 const CHANNELS = [
   {

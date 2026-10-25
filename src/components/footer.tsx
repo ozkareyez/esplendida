@@ -7,7 +7,7 @@ import {
   FacebookIcon,
   WhatsAppIcon,
 } from "@/components/social-icons";
-import { SOCIAL_PROFILES } from "@/lib/negocio";
+import { SOCIAL_PROFILES, WHATSAPP_NUMBER } from "@/lib/negocio";
 
 const COLUMNS = [
   {
@@ -36,8 +36,6 @@ const COLUMNS = [
     ],
   },
 ];
-
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "573000000000";
 
 const SOCIALS = [
   { label: "Facebook", href: SOCIAL_PROFILES.facebook, Icon: FacebookIcon },

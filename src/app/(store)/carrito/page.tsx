@@ -19,8 +19,8 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/use-cart";
 import { useMounted } from "@/hooks/use-mounted";
+import { WHATSAPP_NUMBER } from "@/lib/negocio";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "573000000000";
 const FREE_SHIPPING_THRESHOLD = 150_000;
 
 export default function CarritoPage() {

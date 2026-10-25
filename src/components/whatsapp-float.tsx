@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, ChevronDown } from "lucide-react";
+import { WHATSAPP_NUMBER } from "@/lib/negocio";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "573126221681";
 const MESSAGE = encodeURIComponent("Hola Espléndida, me gustaría hacer un pedido!");
 const HREF = `https://wa.me/${WHATSAPP_NUMBER}?text=${MESSAGE}`;
 

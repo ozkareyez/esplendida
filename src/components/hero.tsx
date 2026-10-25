@@ -10,6 +10,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { Button } from "@/components/ui/button";
+import { WHATSAPP_NUMBER } from "@/lib/negocio";
 import {
   ShieldCheck,
   Truck,
@@ -79,7 +80,6 @@ const TRUST = [
   { icon: RotateCcw, label: "Garantía 30 días" },
 ];
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "573000000000";
 const WHATSAPP_MESSAGE = encodeURIComponent(
   "Hola Espléndida, me gustaría conocer sus productos!"
 );
